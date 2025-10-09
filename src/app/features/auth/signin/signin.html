@@ -1,0 +1,112 @@
+<p-card>
+  <ng-template pTemplate="header">
+    <div class="px-6 pt-6">
+      <h2 class="text-center text-3xl font-bold tracking-tight">
+        Sign in to your account
+      </h2>
+    </div>
+  </ng-template>
+
+  <form #signinForm="ngForm" (ngSubmit)="onSubmit(signinForm)" class="flex flex-col gap-4">
+    <!-- Email -->
+    <div class="flex flex-col gap-1">
+      <label for="email" class="block text-sm font-medium">
+        Email Address
+      </label>
+      <input
+        pInputText
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="formData.email"
+        #emailModel="ngModel"
+        [invalid]="emailModel.invalid && (emailModel.touched || signinForm.submitted)"
+        required
+        email
+        placeholder="john.doe@example.com"
+      />
+      @if (emailModel.invalid && (emailModel.touched || signinForm.submitted)) {
+        @if (emailModel.errors?.['required']) {
+          <p-message severity="error" size="small" variant="simple">Email is required.</p-message>
+        }
+        @if (emailModel.errors?.['email']) {
+          <p-message severity="error" size="small" variant="simple">Please enter a valid email.</p-message>
+        }
+      }
+    </div>
+
+    <!-- Password -->
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <label for="password" class="block text-sm font-medium">
+          Password
+        </label>
+        <a href="#" class="text-sm font-medium">Forgot password?</a>
+      </div>
+      <p-password
+        id="password"
+        name="password"
+        [(ngModel)]="formData.password"
+        #passwordModel="ngModel"
+        [invalid]="passwordModel.invalid && (passwordModel.touched || signinForm.submitted)"
+        required
+        [toggleMask]="true"
+        [feedback]="false"
+        [inputStyleClass]="'w-full'"
+        placeholder="Enter your password"
+      ></p-password>
+      @if (passwordModel.invalid && (passwordModel.touched || signinForm.submitted)) {
+        <p-message severity="error" size="small" variant="simple">Password is required.</p-message>
+      }
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      pButton
+      type="submit"
+      [disabled]="signinForm.invalid"
+      class="w-full"
+      severity="primary"
+    >
+      <span pButtonLabel>Sign In</span>
+    </button>
+
+    <!-- Divider -->
+    <p-divider align="center">
+      <span class="text-sm">Or continue with</span>
+    </p-divider>
+
+    <!-- Social Login Buttons -->
+    <div class="flex gap-3">
+      <button
+        pButton
+        type="button"
+        (click)="loginWithGoogle()"
+        severity="secondary"
+        [outlined]="true"
+        class="w-full"
+      >
+        <i class="pi pi-google"></i>
+        <span pButtonLabel>Google</span>
+      </button>
+
+      <button
+        pButton
+        type="button"
+        (click)="loginWithGitHub()"
+        severity="secondary"
+        [outlined]="true"
+        class="w-full"
+      >
+        <i class="pi pi-github"></i>
+        <span pButtonLabel>GitHub</span>
+      </button>
+    </div>
+
+    <!-- Sign Up Link -->
+    <p class="text-center text-sm">
+      Don't have an account?
+      <a routerLink="/signup" class="font-medium">Sign up</a>
+    </p>
+  </form>
+</p-card>
