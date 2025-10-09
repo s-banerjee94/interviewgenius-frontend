@@ -1,0 +1,15 @@
+<p-menubar [model]="items">
+  <ng-template #start>
+    <div class="flex items-center gap-3">
+      <img src="/interview-genius-log.png" alt="InterviewGenius Logo" class="h-15" />
+      <span class="text-xl font-bold">InterviewGenius</span>
+    </div>
+  </ng-template>
+
+  <ng-template #end>
+    <div class="flex gap-2">
+      <p-button label="Sign In" [outlined]="true" severity="secondary" />
+      <p-button label="Sign Up" />
+    </div>
+  </ng-template>
+</p-menubar>
