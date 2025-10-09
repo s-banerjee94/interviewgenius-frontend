@@ -1,6 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {Button} from 'primeng/button';
-import {MenuItem} from 'primeng/api';
 import {Menubar} from 'primeng/menubar';
 
 @Component({
@@ -10,5 +9,17 @@ import {Menubar} from 'primeng/menubar';
   styleUrl: './navbar.css'
 })
 export class Navbar {
-  items: MenuItem[] = [];
+  isDarkMode = signal(false);
+
+  menubar = {
+    root: {
+      borderColor: 'transparent',
+      borderRight: 'none',
+    }
+  }
+
+  toggleDarkMode() {
+    document.documentElement.classList.toggle('ig-dark');
+    this.isDarkMode.set(!this.isDarkMode());
+  }
 }
