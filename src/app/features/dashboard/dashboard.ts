@@ -1,10 +1,9 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import Keycloak from 'keycloak-js';
-import { KeycloakProfile } from 'keycloak-js';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
+import { User } from '../../core/services/user';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,26 +11,16 @@ import { ButtonModule } from 'primeng/button';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit {
-  private keycloak = inject(Keycloak);
+export class Dashboard {
+  // Inject User Service - single source of truth for all user data
+  userService = inject(User);
 
-  userProfile = signal<KeycloakProfile | null>(null);
-  isLoggedIn = signal<boolean>(false);
-
-  async ngOnInit() {
-    this.isLoggedIn.set(this.keycloak.authenticated ?? false);
-
-    if (this.isLoggedIn()) {
-      try {
-        const profile = await this.keycloak.loadUserProfile();
-        this.userProfile.set(profile);
-      } catch (error) {
-        console.error('Failed to load user profile', error);
-      }
-    }
-  }
+  // All user data comes from the service (pre-loaded by resolver)
+  userProfile = this.userService.userProfile;
+  isLoggedIn = this.userService.isAuthenticated;
+  userRoles = this.userService.userRoles;
 
   logout() {
-    this.keycloak.logout({ redirectUri: window.location.origin });
+    this.userService.logout();
   }
 }

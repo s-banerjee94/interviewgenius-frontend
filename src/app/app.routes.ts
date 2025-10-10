@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import {authGuard} from './core/guards/auth.guard';
+import {dashboardResolver} from './features/dashboard/resolvers/dashboard-resolver';
 
 export const routes: Routes = [
   {
@@ -13,7 +14,10 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard),
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    resolve: {
+      profileLoaded: dashboardResolver
+    }
   },
   {
     path: 'forbidden',
