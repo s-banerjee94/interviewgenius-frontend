@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
+import Keycloak from 'keycloak-js';
 
 @Component({
   selector: 'app-signup',
@@ -26,6 +27,8 @@ import { DividerModule } from 'primeng/divider';
   styleUrl: './signup.css'
 })
 export class Signup {
+  private keycloak = inject(Keycloak);
+
   formData = {
     firstName: '',
     lastName: '',
@@ -43,14 +46,16 @@ export class Signup {
   }
 
   loginWithGoogle(): void {
-    console.log('Login with Google clicked');
-    // TODO: Implement Google OAuth integration with Keycloak
-    alert('Google login will be implemented with Keycloak');
+    this.keycloak.login({
+      redirectUri: window.location.origin + '/dashboard',
+      idpHint: 'google'
+    });
   }
 
   loginWithGitHub(): void {
-    console.log('Login with GitHub clicked');
-    // TODO: Implement GitHub OAuth integration with Keycloak
-    alert('GitHub login will be implemented with Keycloak');
+    this.keycloak.login({
+      redirectUri: window.location.origin + '/dashboard',
+      idpHint: 'github'
+    });
   }
 }

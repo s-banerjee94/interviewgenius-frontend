@@ -1,0 +1,49 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <p-card class="w-full max-w-2xl">
+    <ng-template pTemplate="header">
+      <div class="px-6 pt-6">
+        <h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
+      </div>
+    </ng-template>
+
+    @if (isLoggedIn()) {
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <h3 class="text-xl font-semibold">Welcome back!</h3>
+
+          @if (userProfile()) {
+            <div class="flex flex-col gap-2 rounded-lg bg-surface-50 p-4 dark:bg-surface-800">
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Name:</span>
+                <span>{{ userProfile()!.firstName }} {{ userProfile()!.lastName }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Email:</span>
+                <span>{{ userProfile()!.email }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Username:</span>
+                <span>{{ userProfile()!.username }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <button
+          pButton
+          type="button"
+          (click)="logout()"
+          severity="danger"
+          class="w-full"
+        >
+          <span pButtonLabel>Logout</span>
+        </button>
+      </div>
+    } @else {
+      <div class="flex flex-col gap-4">
+        <p class="text-center">You are not logged in.</p>
+        <a routerLink="/signin" class="text-center font-medium">Go to Sign In</a>
+      </div>
+    }
+  </p-card>
+</div>

@@ -1,5 +1,9 @@
 export const environment = {
   production: true,
   apiUrl: 'https://api.interviewgenius.com',
-  // Add other production environment variables here
+  keycloak: {
+    url: 'http://localhost:8086',
+    realm: 'interviewgenius',
+    clientId: 'gateway-service'
+  }
 };

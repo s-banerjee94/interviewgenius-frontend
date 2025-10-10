@@ -1,0 +1,43 @@
+<div class="flex items-center justify-center min-h-[60vh]">
+  <p-card class="max-w-lg">
+    <ng-template pTemplate="header">
+      <div class="flex justify-center pt-6">
+        <i class="pi pi-ban text-6xl text-red-500"></i>
+      </div>
+    </ng-template>
+
+    <div class="text-center flex flex-col gap-4">
+      <h1 class="text-4xl font-bold text-red-500">403 - Access Denied</h1>
+
+      <p class="text-lg">
+        You don't have permission to access this page.
+      </p>
+
+      <p class="text-sm">
+        This page requires <strong>USER</strong> or <strong>ADMIN</strong> role.
+        Please contact your administrator if you believe this is an error.
+      </p>
+
+      <div class="flex gap-3 justify-center mt-4">
+        <button
+          pButton
+          routerLink="/"
+          severity="primary"
+        >
+          <i class="pi pi-home"></i>
+          <span pButtonLabel>Go Home</span>
+        </button>
+
+        <button
+          pButton
+          routerLink="/signin"
+          severity="secondary"
+          [outlined]="true"
+        >
+          <i class="pi pi-sign-in"></i>
+          <span pButtonLabel>Sign In</span>
+        </button>
+      </div>
+    </div>
+  </p-card>
+</div>

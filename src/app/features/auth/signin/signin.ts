@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
+import Keycloak from 'keycloak-js';
 
 @Component({
   selector: 'app-signin',
@@ -25,11 +26,21 @@ import { DividerModule } from 'primeng/divider';
   templateUrl: './signin.html',
   styleUrl: './signin.css'
 })
-export class Signin {
+export class Signin implements OnInit {
+  private keycloak = inject(Keycloak);
+  private route = inject(ActivatedRoute);
+
   formData = {
     email: '',
     password: ''
   };
+
+  private returnUrl = '/dashboard';
+
+  ngOnInit() {
+    // Get the return URL from query params, default to /dashboard
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+  }
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
@@ -41,14 +52,16 @@ export class Signin {
   }
 
   loginWithGoogle(): void {
-    console.log('Login with Google clicked');
-    // TODO: Implement Google OAuth integration with Keycloak
-    alert('Google login will be implemented with Keycloak');
+    this.keycloak.login({
+      redirectUri: window.location.origin + this.returnUrl,
+      idpHint: 'google'
+    });
   }
 
   loginWithGitHub(): void {
-    console.log('Login with GitHub clicked');
-    // TODO: Implement GitHub OAuth integration with Keycloak
-    alert('GitHub login will be implemented with Keycloak');
+    this.keycloak.login({
+      redirectUri: window.location.origin + this.returnUrl,
+      idpHint: 'github'
+    });
   }
 }
