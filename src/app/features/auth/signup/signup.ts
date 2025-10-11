@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
+import { MessageService } from 'primeng/api';
+import { Auth } from '../../../core/services/auth';
+import { SignupRequest } from '../../../shared/models/auth.model';
 
 @Component({
   selector: 'app-signup',
@@ -26,31 +29,72 @@ import { DividerModule } from 'primeng/divider';
   styleUrl: './signup.css'
 })
 export class Signup {
-  formData = {
+  private readonly authService = inject(Auth);
+  private readonly messageService = inject(MessageService);
+  private readonly router = inject(Router);
+
+  formData: SignupRequest = {
     firstName: '',
     lastName: '',
     email: '',
     password: ''
   };
 
+  isLoading = false;
+
   onSubmit(form: NgForm): void {
-    if (form.valid) {
-      console.log('Form submitted:', this.formData);
-      // TODO: Implement actual signup logic with backend/Keycloak
-      // For now, just log the data
-      alert('Signup successful! Check console for data.');
+    if (form.valid && !this.isLoading) {
+      this.isLoading = true;
+
+      this.authService.signup(this.formData).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Sign up successful! Please sign in.',
+          });
+
+          // Reset form properly
+          form.resetForm();
+
+          setTimeout(() => {
+            this.router.navigate(['/signin']);
+          }, 3500);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error?.message || 'Sign up failed. Please try again.',
+          });
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     }
   }
 
   loginWithGoogle(): void {
     console.log('Login with Google clicked');
     // TODO: Implement Google OAuth integration with Keycloak
-    alert('Google login will be implemented with Keycloak');
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Info',
+      detail: 'Google login will be implemented with Keycloak',
+      life: 3000
+    });
   }
 
   loginWithGitHub(): void {
     console.log('Login with GitHub clicked');
     // TODO: Implement GitHub OAuth integration with Keycloak
-    alert('GitHub login will be implemented with Keycloak');
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Info',
+      detail: 'GitHub login will be implemented with Keycloak',
+      life: 3000
+    });
   }
 }

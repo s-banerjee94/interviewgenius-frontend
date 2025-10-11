@@ -64,7 +64,8 @@
     <button
       pButton
       type="submit"
-      [disabled]="signinForm.invalid"
+      [disabled]="signinForm.invalid || isLoading"
+      [loading]="isLoading"
       class="w-full"
       severity="primary"
     >
