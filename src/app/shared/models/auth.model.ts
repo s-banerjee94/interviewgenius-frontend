@@ -20,6 +20,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  profilePicture?: string;
   authProviders: string[];
   oauthProviderIds: { [key: string]: string };
   role: string;

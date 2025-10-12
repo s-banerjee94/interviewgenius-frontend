@@ -67,8 +67,37 @@ export class Auth {
     const expiresAt = Date.now() + (response.expiresIn * 1000); // Convert seconds to milliseconds
     localStorage.setItem(this.EXPIRES_AT_KEY, expiresAt.toString());
 
+    // Decode JWT to extract user info
+    const userInfo = this.decodeToken(response.token);
+    if (userInfo) {
+      localStorage.setItem(this.USER_KEY, JSON.stringify(userInfo));
+    }
+
     // Update auth state signal
     this.authStateSignal.set(true);
+  }
+
+  private decodeToken(token: string): Partial<User> | null {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+
+      // Extract user info from JWT payload
+      return {
+        id: decoded.user_id,
+        email: decoded.email || decoded.sub,
+        role: decoded.role,
+        firstName: decoded.first_name || '',
+        lastName: decoded.last_name || '',
+        profilePicture: decoded.profile_picture,
+        authProviders: decoded.auth_providers || [],
+        isActive: true,
+        isVerified: true,
+      };
+    } catch (error) {
+      console.error('Failed to decode token:', error);
+      return null;
+    }
   }
 
   getToken(): string | null {
@@ -118,6 +147,12 @@ export class Auth {
 
     const expiresAt = Date.now() + (expiresIn * 1000);
     localStorage.setItem(this.EXPIRES_AT_KEY, expiresAt.toString());
+
+    // Decode JWT to extract user info
+    const userInfo = this.decodeToken(token);
+    if (userInfo) {
+      localStorage.setItem(this.USER_KEY, JSON.stringify(userInfo));
+    }
 
     // Update auth state signal
     this.authStateSignal.set(true);

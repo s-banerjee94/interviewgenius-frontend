@@ -7,18 +7,34 @@
   </ng-template>
 
   <ng-template #end>
-    <div class="flex gap-2">
+    <div class="flex gap-4 items-center">
       <p-button
         [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
         [outlined]="true"
         severity="secondary"
+        size="small"
         (onClick)="toggleDarkMode()"
       />
       @if (!isAuthenticated()) {
         <p-button label="Sign In" [outlined]="true" severity="secondary" routerLink="/signin" />
         <p-button label="Sign Up" routerLink="/signup" />
       } @else {
-        <p-button label="Logout" [outlined]="true" severity="danger" (onClick)="logout()" />
+        @if (profilePicture()) {
+          <p-avatar
+            [image]="profilePicture()!"
+            shape="circle"
+            (click)="menu.toggle($event)"
+            styleClass="cursor-pointer"
+          />
+        } @else {
+          <p-avatar
+            [label]="userInitials()"
+            shape="circle"
+            (click)="menu.toggle($event)"
+            styleClass="cursor-pointer"
+          />
+        }
+        <p-menu #menu [model]="menuItems()" [popup]="true" />
       }
     </div>
   </ng-template>
