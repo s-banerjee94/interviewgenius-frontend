@@ -14,8 +14,12 @@
         severity="secondary"
         (onClick)="toggleDarkMode()"
       />
-      <p-button label="Sign In" [outlined]="true" severity="secondary" routerLink="/signin" />
-      <p-button label="Sign Up" routerLink="/signup" />
+      @if (!isAuthenticated()) {
+        <p-button label="Sign In" [outlined]="true" severity="secondary" routerLink="/signin" />
+        <p-button label="Sign Up" routerLink="/signup" />
+      } @else {
+        <p-button label="Logout" [outlined]="true" severity="danger" (onClick)="logout()" />
+      }
     </div>
   </ng-template>
 </p-menubar>

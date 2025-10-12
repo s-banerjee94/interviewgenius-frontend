@@ -49,7 +49,7 @@ export class Signin {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: `Welcome back, ${response.user.firstName}!`,
+            detail: 'Login successful! Redirecting...',
           });
 
           // Navigate to home/dashboard after successful login
@@ -73,24 +73,12 @@ export class Signin {
   }
 
   loginWithGoogle(): void {
-    console.log('Login with Google clicked');
-    // TODO: Implement Google OAuth integration with Keycloak
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Info',
-      detail: 'Google login will be implemented with Keycloak',
-      life: 3000
-    });
+    // Redirect to backend OAuth2 Google authorization endpoint
+    this.authService.initiateGoogleLogin();
   }
 
   loginWithGitHub(): void {
-    console.log('Login with GitHub clicked');
-    // TODO: Implement GitHub OAuth integration with Keycloak
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Info',
-      detail: 'GitHub login will be implemented with Keycloak',
-      life: 3000
-    });
+    // Redirect to backend OAuth2 GitHub authorization endpoint
+    this.authService.initiateGitHubLogin();
   }
 }

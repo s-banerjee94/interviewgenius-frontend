@@ -8,5 +8,9 @@ export const routes: Routes = [
   {
     path: 'signin',
     loadComponent: () => import('./features/auth/signin/signin').then(m => m.Signin)
+  },
+  {
+    path: 'auth/callback',
+    loadComponent: () => import('./features/auth/oauth-callback/oauth-callback').then(m => m.OauthCallback)
   }
 ];

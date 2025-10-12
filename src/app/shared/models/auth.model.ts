@@ -29,6 +29,6 @@ export interface User {
 
 export interface LoginResponse {
   token: string;
-  tokenType: string | null;
-  user: User;
+  tokenType: string;
+  expiresIn: number;
 }
