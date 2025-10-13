@@ -84,7 +84,7 @@ export class Auth {
 
       // Extract user info from JWT payload
       return {
-        id: decoded.user_id,
+        id: decoded.userId,
         email: decoded.email || decoded.sub,
         role: decoded.role,
         firstName: decoded.first_name || '',

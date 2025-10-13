@@ -34,7 +34,7 @@ export class OauthCallback implements OnInit {
         });
 
         setTimeout(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         }, 1000);
       } else {
         this.showErrorAndRedirect('Authentication failed');

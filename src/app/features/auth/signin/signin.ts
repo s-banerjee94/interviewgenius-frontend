@@ -52,9 +52,9 @@ export class Signin {
             detail: 'Login successful! Redirecting...',
           });
 
-          // Navigate to home/dashboard after successful login
+          // Navigate to dashboard after successful login
           setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/dashboard']);
           }, 1000);
         },
         error: (error) => {
