@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
+import { UserService } from '../../core/services/user';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 
@@ -11,7 +11,7 @@ import { CardModule } from 'primeng/card';
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
-  private readonly http = inject(HttpClient);
+  private readonly userService = inject(UserService);
   private readonly authService = inject(Auth);
 
   userDetailsResponse: string = '';
@@ -25,9 +25,8 @@ export class Dashboard {
     }
 
     this.isLoading = true;
-    const url = `http://localhost:8080/api/v1/users/${user.id}`;
 
-    this.http.get(url).subscribe({
+    this.userService.getUserById(user.id).subscribe({
       next: (response) => {
         this.userDetailsResponse = JSON.stringify(response, null, 2);
         this.isLoading = false;

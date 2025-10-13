@@ -61,19 +61,19 @@ export class Navbar {
       label: this.fullName(),
       disabled: true,
       styleClass: 'font-semibold'
-    },
-    {
+    }, {
       separator: true
-    },
-    {
+    }, {
       label: 'Profile',
       icon: 'pi pi-user',
       command: () => this.goToProfile()
-    },
-    {
+    }, {
+      label: 'Resume',
+      icon: 'pi pi-file-pdf',
+      routerLink: '/resume'
+    }, {
       separator: true
-    },
-    {
+    }, {
       label: 'Logout',
       icon: 'pi pi-sign-out',
       command: () => this.logout()

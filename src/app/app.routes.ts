@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { profileResolver } from './features/profile/profile-resolver';
 
 export const routes: Routes = [
   {
@@ -16,5 +17,13 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard)
-  }
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile/profile').then(m => m.Profile),
+    resolve: {
+      profile: profileResolver
+    }
+  },
+
 ];
