@@ -21,11 +21,12 @@
       } @else {
         @if (profilePicture()) {
           <p-avatar
-            [image]="profilePicture()!"
             shape="circle"
             (click)="menu.toggle($event)"
             styleClass="cursor-pointer"
-          />
+          >
+            <img [src]="profilePicture()" alt="User Avatar" referrerpolicy="no-referrer"/>
+          </p-avatar>
         } @else {
           <p-avatar
             [label]="userInitials()"
