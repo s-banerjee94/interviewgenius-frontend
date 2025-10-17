@@ -27,6 +27,7 @@ export interface UserResponse {
   lastLoginAt?: string;
   profileImageUrl?: string;
   authProviders: string[];
+  skills?: string[]; // Array of skill names
 }
 
 // PUT /users/{id} - Request Body

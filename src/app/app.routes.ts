@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { profileResolver } from './features/profile/profile-resolver';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -16,14 +17,20 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard)
+    loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard),
+    canActivate: [authGuard]
   },
   {
     path: 'profile',
     loadComponent: () => import('./features/profile/profile').then(m => m.Profile),
+    canActivate: [authGuard],
     resolve: {
       profile: profileResolver
     }
   },
-
+  {
+    path: 'resume',
+    loadComponent: () => import('./features/resume/resume').then(m => m.Resume),
+    canActivate: [authGuard]
+  }
 ];

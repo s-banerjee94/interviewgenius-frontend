@@ -57,6 +57,7 @@ export class Profile {
   email = signal('');
   phoneNumber = signal('');
   experience = signal<Experience | undefined>(undefined);
+  skills = signal<string[]>([]);
 
   // Experience level options
   experienceLevels: ExperienceLevel[] = [
@@ -131,6 +132,7 @@ export class Profile {
       this.experience.set(profileData.experience);
       this.profilePicture.set(profileData.profileImageUrl || null);
       this.authProviders.set(profileData.authProviders || []);
+      this.skills.set(profileData.skills || []);
 
       // Store original values
       this.storeOriginalValues();
@@ -192,6 +194,7 @@ export class Profile {
         this.phoneNumber.set(response.phoneNumber || '');
         this.experience.set(response.experience);
         this.profilePicture.set(response.profileImageUrl || null);
+        this.skills.set(response.skills || []);
 
         // Store new original values
         this.storeOriginalValues();

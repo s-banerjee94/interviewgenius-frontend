@@ -123,6 +123,23 @@
         />
       </div>
 
+      <!-- Skills Section -->
+      @if (skills().length > 0) {
+        <div>
+          <label class="block text-sm mb-2">
+            <i class="pi pi-code mr-1"></i>
+            Skills
+          </label>
+          <div class="flex flex-wrap gap-2">
+            @for (skill of skills(); track skill) {
+              <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-surface-100 dark:bg-surface-800">
+                {{ skill }}
+              </span>
+            }
+          </div>
+        </div>
+      }
+
       <!-- Edit Profile Button -->
       @if (!isEditMode()) {
         <div>
