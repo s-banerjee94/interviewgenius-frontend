@@ -1,59 +1,204 @@
 # InterviewGenius
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.2.
+InterviewGenius is a modern web application designed to help job seekers prepare for technical interviews. Built with Angular 20+ and a focus on user experience, it provides tools for managing resumes, profiles, and interview preparation.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **User Authentication**: Secure JWT-based authentication with OAuth2 support (Google, GitHub)
+- **Profile Management**: Manage personal information, experience levels, skills, and passwords
+- **Resume Builder**: Create and manage your professional resume with work experience, education, and skills
+- **Resume Upload**: Upload PDF resumes with automatic parsing to extract work experience and education
+- **Dark Mode**: Toggle between light and dark themes
+- **Responsive Design**: Modern UI built with PrimeNG and TailwindCSS
+
+## Tech Stack
+
+- **Frontend Framework**: Angular 20.3.x with standalone components
+- **UI Components**: PrimeNG 20.x with custom Aura theme
+- **Styling**: TailwindCSS 4.x with PostCSS
+- **State Management**: Angular Signals
+- **Authentication**: Custom JWT with OAuth2 integration
+- **Icons**: FontAwesome and PrimeIcons
+- **Markdown Rendering**: ngx-markdown with highlight.js
+- **Testing**: Jasmine with Karma
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Node.js (v18 or higher)
+- npm or yarn
+- Angular CLI 20.3.2 or higher
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd interview-genius
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure the backend API URL:
+   - The application expects a backend API running at `http://localhost:8080`
+   - Update the API URLs in service files if your backend runs on a different port
+
+## Development
+
+### Development Server
+
+To start a local development server:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navigate to `http://localhost:4200/`. The application will automatically reload when you modify source files.
 
-## Code scaffolding
+### Code Scaffolding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Generate new components using Angular CLI:
 
 ```bash
 ng generate component component-name
+ng generate service service-name
+ng generate guard guard-name
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+For all available schematics:
 
 ```bash
 ng generate --help
 ```
 
-## Building
+### Building
 
-To build the project run:
+Build the project for production:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+For development build with source maps:
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+```bash
+ng build --configuration development
+```
+
+### Running Tests
+
+Execute unit tests with Karma:
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+## Project Structure
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+```
+src/app/
+├── core/                          # Core singleton services and utilities
+│   ├── guards/
+│   │   └── auth-guard.ts         # Route guard for protected routes
+│   ├── interceptors/
+│   │   └── auth-interceptor.ts   # HTTP interceptor for auth headers
+│   └── services/
+│       ├── auth.ts               # Authentication service
+│       ├── user.ts               # User management service
+│       ├── resume.ts             # Resume management service
+│       └── error-handler.ts      # Global error handler
+├── features/                      # Feature modules
+│   ├── auth/
+│   │   ├── signin/               # Sign in page
+│   │   ├── signup/               # Sign up page
+│   │   └── oauth-callback/       # OAuth2 callback handler
+│   ├── dashboard/                # Main dashboard
+│   ├── profile/                  # User profile management
+│   │   └── profile-resolver.ts  # Resolver for profile data
+│   └── resume/                   # Resume builder
+├── shared/                        # Shared components and models
+│   ├── components/
+│   │   ├── navbar/               # Navigation bar
+│   │   └── footer/               # Footer component
+│   └── models/
+│       ├── auth.model.ts         # Auth-related interfaces
+│       ├── user.model.ts         # User-related interfaces
+│       └── resume.model.ts       # Resume-related interfaces
+├── app.ts                         # Root component
+├── app.config.ts                  # Application configuration
+└── app.routes.ts                  # Route definitions
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Available Routes
+
+- `/` - Landing page
+- `/signup` - User registration
+- `/signin` - User login
+- `/auth/callback` - OAuth2 callback handler
+- `/dashboard` - Protected dashboard (requires authentication)
+- `/profile` - User profile management (requires authentication)
+- `/resume` - Resume builder (requires authentication)
+
+## Backend API
+
+The application requires a backend API with the following endpoints:
+
+### Authentication
+- `POST /auth/signup` - User registration
+- `POST /auth/login` - User login (returns JWT)
+- `GET /oauth2/authorization/google` - Google OAuth2 flow
+- `GET /oauth2/authorization/github` - GitHub OAuth2 flow
+
+### User Management
+- `GET /api/v1/users/{id}` - Get user profile
+- `PUT /api/v1/users/{id}` - Update user profile
+- `PATCH /api/v1/users/{id}/change-password` - Change password
+
+### Resume Management
+- `GET /api/v1/users/{userId}/resume` - Get user's resume
+- `PUT /api/v1/users/{userId}/resume` - Create/update resume
+- `POST /api/v1/users/upload-pdf` - Upload and parse resume PDF
+
+## Configuration
+
+### PrimeNG Theme
+The application uses a custom Aura theme with cyan as the primary color. Theme configuration is in `src/app/app.config.ts`.
+
+### TailwindCSS
+TailwindCSS is configured with PostCSS and the `tailwindcss-primeui` plugin for seamless PrimeNG integration.
+
+### Dark Mode
+Dark mode is controlled by the `.ig-dark` class on the document root. Toggle it from the navbar.
+
+## Development Guidelines
+
+- Use Angular Signals for reactive state management
+- All components are standalone (no NgModules)
+- Use template-driven forms
+- Rely on PrimeNG theme colors instead of TailwindCSS color classes
+- Use PrimeNG components for consistent UI
+- Protected routes use the `authGuard`
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Additional Resources
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular Documentation](https://angular.dev)
+- [PrimeNG Documentation](https://primeng.org)
+- [TailwindCSS Documentation](https://tailwindcss.com)
+- [Angular CLI Documentation](https://angular.dev/tools/cli)
