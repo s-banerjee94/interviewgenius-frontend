@@ -1,0 +1,635 @@
+<p-toast />
+
+<div class="max-w-4xl mx-auto p-6">
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold mb-1">Professional Resume</h1>
+    <p class="text-sm">Resume is required for interview process</p>
+  </div>
+
+  <!-- Single Card Container -->
+  <p-card>
+    <!-- Resume Upload Section -->
+    <div class="text-center mb-6">
+      <h2 class="text-xl font-semibold mb-2">
+        <i class="pi pi-upload mr-2"></i>
+        Upload Resume
+      </h2>
+      <p class="text-sm mb-4">
+        Upload your resume and let AI parse your work experience and education
+      </p>
+
+      <p-fileUpload
+        mode="basic"
+        accept=".pdf"
+        [maxFileSize]="5000000"
+        [auto]="true"
+        chooseLabel="Choose Resume"
+        (onSelect)="onFileSelect($event)"
+        [disabled]="isUploading()"
+      />
+
+      @if (isUploading()) {
+        <div class="mt-4">
+          <p-progressBar mode="indeterminate" />
+          <p class="text-sm mt-2">Uploading and parsing your resume...</p>
+        </div>
+      }
+
+      @if (resumeFileUrl()) {
+        <div class="mt-4 flex items-center justify-center gap-2">
+          <i class="pi pi-check-circle"></i>
+          <span class="text-sm">Resume uploaded successfully</span>
+        </div>
+      }
+
+      <p class="text-xs mt-4">Supported formats: PDF (Max 5MB)</p>
+    </div>
+
+    <p-divider />
+
+    <div class="text-center mb-6">
+      <p class="text-sm font-semibold">Or add your experience manually below</p>
+    </div>
+
+    <p-divider />
+
+    <!-- Work Experience Section -->
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-xl font-semibold">
+            <i class="pi pi-briefcase mr-2"></i>
+            Work Experience
+          </h2>
+          <p class="text-sm">Add your professional work history</p>
+        </div>
+        <p-button
+          label="Add Experience"
+          icon="pi pi-plus"
+          (onClick)="openAddWorkExpDialog()"
+        />
+      </div>
+
+      @if (hasWorkExperiences()) {
+        <div class="space-y-4">
+          @for (exp of workExperiences(); track $index) {
+            <div class="border rounded-lg p-4">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <h3 class="text-lg font-semibold">{{ exp.jobTitle }}</h3>
+                    @if (exp.isCurrentRole) {
+                      <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        Current
+                      </span>
+                    }
+                  </div>
+                  <p class="flex items-center gap-2 mb-1">
+                    <i class="pi pi-building text-sm"></i>
+                    <span class="font-medium">{{ exp.companyName }}</span>
+                  </p>
+                  @if (exp.location) {
+                    <p class="flex items-center gap-2 text-sm mb-1">
+                      <i class="pi pi-map-marker"></i>
+                      <span>{{ exp.location }}</span>
+                    </p>
+                  }
+                  <p class="flex items-center gap-2 text-sm mb-3">
+                    <i class="pi pi-calendar"></i>
+                    <span>{{ formatDate(exp.startDate) }} - {{ exp.isCurrentRole ? 'Present' : formatDate(exp.endDate) }}</span>
+                  </p>
+                  <p class="text-sm whitespace-pre-wrap">{{ exp.description }}</p>
+                </div>
+                <div class="flex gap-2 ml-4">
+                  <p-button
+                    icon="pi pi-pencil"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="openEditWorkExpDialog(exp, $index)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    [text]="true"
+                    severity="danger"
+                    (onClick)="deleteWorkExperience($index)"
+                  />
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-8 border rounded-lg">
+          <i class="pi pi-briefcase text-4xl mb-4"></i>
+          <h3 class="text-lg font-semibold mb-2">No work experience added yet</h3>
+          <p class="text-sm mb-4">Start building your professional profile by adding your work history</p>
+          <p-button
+            label="Add Your First Experience"
+            icon="pi pi-plus"
+            (onClick)="openAddWorkExpDialog()"
+          />
+        </div>
+      }
+    </div>
+
+    <p-divider />
+
+    <!-- Education Section -->
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-xl font-semibold">
+            <i class="pi pi-graduation-cap mr-2"></i>
+            Education
+          </h2>
+          <p class="text-sm">Add your educational background</p>
+        </div>
+        <p-button
+          label="Add Education"
+          icon="pi pi-plus"
+          (onClick)="openAddEducationDialog()"
+        />
+      </div>
+
+      @if (hasEducations()) {
+        <div class="space-y-4">
+          @for (edu of educations(); track $index) {
+            <div class="border rounded-lg p-4">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <i class="pi pi-graduation-cap text-lg"></i>
+                    <h3 class="text-lg font-semibold">{{ edu.degree }}</h3>
+                    @if (edu.isCurrentlyStudying) {
+                      <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Current
+                      </span>
+                    }
+                  </div>
+                  <p class="font-medium mb-1">{{ edu.fieldOfStudy }}</p>
+                  <p class="flex items-center gap-2 mb-1">
+                    <i class="pi pi-building text-sm"></i>
+                    <span>{{ edu.institution }}</span>
+                  </p>
+                  <p class="flex items-center gap-2 text-sm mb-2">
+                    <i class="pi pi-calendar"></i>
+                    <span>{{ formatDate(edu.startDate) }} - {{ edu.isCurrentlyStudying ? 'Present' : formatDate(edu.endDate) }}</span>
+                  </p>
+                  @if (edu.grade) {
+                    <p class="text-sm mb-2">
+                      <span class="font-medium">Grade:</span> {{ edu.grade }}
+                    </p>
+                  }
+                  @if (edu.description) {
+                    <p class="text-sm whitespace-pre-wrap">{{ edu.description }}</p>
+                  }
+                </div>
+                <div class="flex gap-2 ml-4">
+                  <p-button
+                    icon="pi pi-pencil"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="openEditEducationDialog(edu, $index)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    [text]="true"
+                    severity="danger"
+                    (onClick)="deleteEducation($index)"
+                  />
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-8 border rounded-lg">
+          <i class="pi pi-graduation-cap text-4xl mb-4"></i>
+          <h3 class="text-lg font-semibold mb-2">No education added yet</h3>
+          <p class="text-sm mb-4">Add your educational qualifications and certifications</p>
+          <p-button
+            label="Add Your First Education"
+            icon="pi pi-plus"
+            (onClick)="openAddEducationDialog()"
+          />
+        </div>
+      }
+    </div>
+
+    <p-divider />
+
+    <!-- Skills Section -->
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-xl font-semibold">
+            <i class="pi pi-star mr-2"></i>
+            Skills
+          </h2>
+          <p class="text-sm">Add your technical and professional skills</p>
+        </div>
+        <p-button
+          label="Add Skill"
+          icon="pi pi-plus"
+          (onClick)="openAddSkillDialog()"
+        />
+      </div>
+
+      @if (hasSkills()) {
+        <div class="flex flex-wrap gap-2">
+          @for (skill of skills(); track $index) {
+            <div class="inline-flex items-center gap-2 px-3 py-2 border rounded-lg">
+              <span class="font-medium">{{ skill.name }}</span>
+              @if (skill.level) {
+                <span class="text-xs px-2 py-1 rounded-full bg-gray-100">{{ skill.level }}</span>
+              }
+              <div class="flex gap-1">
+                <p-button
+                  icon="pi pi-pencil"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  severity="secondary"
+                  (onClick)="openEditSkillDialog(skill, $index)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  severity="danger"
+                  (onClick)="deleteSkill($index)"
+                />
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-8 border rounded-lg">
+          <i class="pi pi-star text-4xl mb-4"></i>
+          <h3 class="text-lg font-semibold mb-2">No skills added yet</h3>
+          <p class="text-sm mb-4">Add your technical and professional skills to highlight your expertise</p>
+          <p-button
+            label="Add Your First Skill"
+            icon="pi pi-plus"
+            (onClick)="openAddSkillDialog()"
+          />
+        </div>
+      }
+    </div>
+
+    <p-divider />
+
+    <!-- Save Resume Button -->
+    <div class="flex justify-center pt-4">
+      <p-button
+        label="Save Resume"
+        icon="pi pi-save"
+        size="large"
+        [loading]="isLoading()"
+        [disabled]="isLoading()"
+        (onClick)="saveResume()"
+      />
+    </div>
+  </p-card>
+</div>
+
+<!-- Work Experience Dialog -->
+<p-dialog
+  [header]="isEditingWorkExp() ? 'Edit Work Experience' : 'Add Work Experience'"
+  [visible]="showWorkExpDialog()"
+  (visibleChange)="showWorkExpDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form class="space-y-4">
+    <!-- Job Title -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Job Title <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="workExpForm.jobTitle"
+        name="jobTitle"
+        placeholder="e.g., Senior Software Engineer"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Company Name -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Company Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="workExpForm.companyName"
+        name="companyName"
+        placeholder="e.g., Google"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Location -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Location (Optional)
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="workExpForm.location"
+        name="location"
+        placeholder="e.g., San Francisco, CA"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Date Range -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm mb-2 font-medium">
+          Start Date <span class="text-red-500">*</span>
+        </label>
+        <input
+          pInputText
+          type="month"
+          [(ngModel)]="workExpForm.startDate"
+          name="startDate"
+          fluid="true"
+        />
+      </div>
+      <div>
+        <label class="block text-sm mb-2 font-medium">
+          End Date
+        </label>
+        <input
+          pInputText
+          type="month"
+          [(ngModel)]="workExpForm.endDate"
+          name="endDate"
+          [disabled]="workExpForm.isCurrentRole"
+          fluid="true"
+        />
+      </div>
+    </div>
+
+    <!-- Currently Working Here -->
+    <div class="flex items-center gap-2">
+      <p-checkbox
+        [(ngModel)]="workExpForm.isCurrentRole"
+        name="isCurrentRole"
+        [binary]="true"
+        (onChange)="onCurrentRoleChange($event)"
+      />
+      <label class="text-sm">I currently work here</label>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Description <span class="text-red-500">*</span>
+      </label>
+      <textarea
+        pTextarea
+        [(ngModel)]="workExpForm.description"
+        name="description"
+        rows="5"
+        placeholder="Describe your responsibilities, achievements, and key contributions..."
+        fluid="true"
+      ></textarea>
+      <small class="text-xs">Describe your key responsibilities and achievements (500-1000 characters recommended)</small>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="showWorkExpDialog.set(false)"
+        [disabled]="isLoading()"
+      />
+      <p-button
+        [label]="isEditingWorkExp() ? 'Update' : 'Add'"
+        icon="pi pi-check"
+        (onClick)="saveWorkExperience()"
+        [disabled]="isLoading()"
+        [loading]="isLoading()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Education Dialog -->
+<p-dialog
+  [header]="isEditingEducation() ? 'Edit Education' : 'Add Education'"
+  [visible]="showEducationDialog()"
+  (visibleChange)="showEducationDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form class="space-y-4">
+    <!-- Degree -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Degree <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="educationForm.degree"
+        name="degree"
+        placeholder="e.g., Bachelor of Science, Master's, PhD"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Field of Study -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Field of Study <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="educationForm.fieldOfStudy"
+        name="fieldOfStudy"
+        placeholder="e.g., Computer Science, Business Administration"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Institution -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Institution <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="educationForm.institution"
+        name="institution"
+        placeholder="e.g., Stanford University"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Date Range -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm mb-2 font-medium">
+          Start Date <span class="text-red-500">*</span>
+        </label>
+        <input
+          pInputText
+          type="month"
+          [(ngModel)]="educationForm.startDate"
+          name="startDate"
+          fluid="true"
+        />
+      </div>
+      <div>
+        <label class="block text-sm mb-2 font-medium">
+          End Date
+        </label>
+        <input
+          pInputText
+          type="month"
+          [(ngModel)]="educationForm.endDate"
+          name="endDate"
+          [disabled]="educationForm.isCurrentlyStudying"
+          fluid="true"
+        />
+      </div>
+    </div>
+
+    <!-- Currently Studying -->
+    <div class="flex items-center gap-2">
+      <p-checkbox
+        [(ngModel)]="educationForm.isCurrentlyStudying"
+        name="isCurrentlyStudying"
+        [binary]="true"
+        (onChange)="onCurrentlyStudyingChange($event)"
+      />
+      <label class="text-sm">I currently study here</label>
+    </div>
+
+    <!-- Grade -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Grade / GPA (Optional)
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="educationForm.grade"
+        name="grade"
+        placeholder="e.g., 3.8/4.0, First Class, 85%"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Description (Optional)
+      </label>
+      <textarea
+        pTextarea
+        [(ngModel)]="educationForm.description"
+        name="description"
+        rows="3"
+        placeholder="Add relevant coursework, thesis, achievements, or activities..."
+        fluid="true"
+      ></textarea>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="showEducationDialog.set(false)"
+        [disabled]="isLoading()"
+      />
+      <p-button
+        [label]="isEditingEducation() ? 'Update' : 'Add'"
+        icon="pi pi-check"
+        (onClick)="saveEducation()"
+        [disabled]="isLoading()"
+        [loading]="isLoading()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Skills Dialog -->
+<p-dialog
+  [header]="isEditingSkill() ? 'Edit Skill' : 'Add Skill'"
+  [visible]="showSkillDialog()"
+  (visibleChange)="showSkillDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '30vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form class="space-y-4">
+    <!-- Skill Name -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Skill Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="skillForm.name"
+        name="skillName"
+        placeholder="e.g., JavaScript, Project Management"
+        fluid="true"
+      />
+    </div>
+
+    <!-- Skill Level -->
+    <div>
+      <label class="block text-sm mb-2 font-medium">
+        Level (Optional)
+      </label>
+      <input
+        pInputText
+        type="text"
+        [(ngModel)]="skillForm.level"
+        name="skillLevel"
+        placeholder="e.g., Beginner, Intermediate, Advanced, Expert"
+        fluid="true"
+      />
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="showSkillDialog.set(false)"
+      />
+      <p-button
+        [label]="isEditingSkill() ? 'Update' : 'Add'"
+        icon="pi pi-check"
+        (onClick)="saveSkill()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
