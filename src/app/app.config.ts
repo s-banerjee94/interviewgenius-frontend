@@ -2,6 +2,8 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
+import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
@@ -45,7 +47,9 @@ export const appConfig: ApplicationConfig = {
         }
       }
     }),
-    MessageService
+    provideMarkdown(),
+    MessageService,
+    DialogService
   ]
 };
 

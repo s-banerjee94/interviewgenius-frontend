@@ -1,24 +1,84 @@
-<div class="flex items-center justify-center min-h-screen bg-surface-50">
-  <p-card class="w-full max-w-4xl">
-    <div class="text-center mb-6">
-      <h2 class="text-3xl font-bold text-surface-900 mb-2">Dashboard</h2>
-      <p class="text-surface-600">Test the Auth Interceptor</p>
-    </div>
+<div class="flex flex-col gap-8 p-4">
+  <!-- Start Interview Section -->
+  <div class="flex items-center justify-center">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-1">Welcome back!</h1>
+      <p class="text-base mb-6">Are you ready for an interview!</p>
 
-    <div class="flex flex-col gap-4">
-      <p-button
-        label="Get User Details"
-        (onClick)="getUserDetails()"
-        [loading]="isLoading"
-        class="w-full"
-      />
-
-      @if (userDetailsResponse) {
-        <div class="bg-surface-100 p-4 rounded-lg">
-          <h3 class="text-lg font-semibold text-surface-900 mb-2">Response:</h3>
-          <pre class="text-sm text-surface-700 whitespace-pre-wrap break-all">{{ userDetailsResponse }}</pre>
+      <div class="flex flex-wrap gap-4 items-end">
+        <div class="flex-1 min-w-40">
+          <p-select
+            [(ngModel)]="selectedExperience"
+            [options]="experienceLevels"
+            optionLabel="label"
+            placeholder="Select experience level"
+            fluid=true
+          />
         </div>
-      }
+
+        <div class="flex-1 min-w-64">
+          <p-select
+            [(ngModel)]="selectedLanguage"
+            [options]="programmingLanguages"
+            optionLabel="name"
+            placeholder="Select programming language"
+            fluid=true
+          />
+        </div>
+
+        <div>
+          <p-button
+            label="Start Session"
+            (onClick)="startSession()"
+            severity="primary"
+          />
+        </div>
+      </div>
     </div>
-  </p-card>
+  </div>
+
+  <!-- Sessions List Section -->
+  <div class="w-full">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="p-4">
+          <h2 class="text-2xl font-bold">Interview Sessions</h2>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <p-table [value]="sessions()" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Language</th>
+              <th>Experience Level</th>
+              <th>Start Time</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-session>
+            <tr>
+              <td>{{ session.language }}</td>
+              <td>{{ session.experienceLevel }}</td>
+              <td>{{ session.startTime | date: 'medium' }}</td>
+              <td>
+                <p-button
+                  icon="pi pi-eye"
+                  [routerLink]="['/session', session.sessionId]"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="info"
+                  pTooltip="View Details"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center">No interview sessions found</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-card>
+  </div>
 </div>

@@ -32,5 +32,15 @@ export const routes: Routes = [
     path: 'resume',
     loadComponent: () => import('./features/resume/resume').then(m => m.Resume),
     canActivate: [authGuard]
+  },
+  {
+    path: 'session/:sessionId',
+    loadComponent: () => import('./features/session-details/session-details').then(m => m.SessionDetails),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'interview/:sessionId',
+    loadComponent: () => import('./features/interview/interview').then(m => m.Interview),
+    canActivate: [authGuard]
   }
 ];
