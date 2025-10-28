@@ -8,6 +8,13 @@ InterviewGenius is a modern web application designed to help job seekers prepare
 - **Profile Management**: Manage personal information, experience levels, skills, and passwords
 - **Resume Builder**: Create and manage your professional resume with work experience, education, and skills
 - **Resume Upload**: Upload PDF resumes with automatic parsing to extract work experience and education
+- **Voice Interview System**:
+  - Interactive voice-based interview sessions with real-time audio recording
+  - AI-generated interview questions with optional audio playback
+  - Multi-step interview setup wizard with browser, camera, and microphone checks
+  - Session management with detailed history and feedback
+  - Real-time question-answer flow with automatic session completion
+- **Interview History**: View past interview sessions with questions, answers, scores, and detailed feedback
 - **Dark Mode**: Toggle between light and dark themes
 - **Responsive Design**: Modern UI built with PrimeNG and TailwindCSS
 
@@ -108,61 +115,36 @@ src/app/
 │   ├── interceptors/
 │   │   └── auth-interceptor.ts   # HTTP interceptor for auth headers
 │   └── services/
-│       ├── auth.ts               # Authentication service
+│       ├── auth.ts               # JWT authentication service with signals
 │       ├── user.ts               # User management service
 │       ├── resume.ts             # Resume management service
+│       ├── interview.ts          # Interview session management service
 │       └── error-handler.ts      # Global error handler
 ├── features/                      # Feature modules
 │   ├── auth/
 │   │   ├── signin/               # Sign in page
 │   │   ├── signup/               # Sign up page
 │   │   └── oauth-callback/       # OAuth2 callback handler
-│   ├── dashboard/                # Main dashboard
+│   ├── dashboard/                # Main dashboard with interview session starter
 │   ├── profile/                  # User profile management
 │   │   └── profile-resolver.ts  # Resolver for profile data
-│   └── resume/                   # Resume builder
+│   ├── resume/                   # Resume builder and management
+│   ├── interview-setup/          # Multi-step interview setup wizard
+│   ├── interview/                # Voice interview session with recording
+│   └── session-details/          # Interview session details and feedback
 ├── shared/                        # Shared components and models
 │   ├── components/
-│   │   ├── navbar/               # Navigation bar
+│   │   ├── navbar/               # Navigation bar with auth state
 │   │   └── footer/               # Footer component
 │   └── models/
 │       ├── auth.model.ts         # Auth-related interfaces
 │       ├── user.model.ts         # User-related interfaces
-│       └── resume.model.ts       # Resume-related interfaces
+│       ├── resume.model.ts       # Resume-related interfaces
+│       └── interview.model.ts    # Interview session and question interfaces
 ├── app.ts                         # Root component
-├── app.config.ts                  # Application configuration
-└── app.routes.ts                  # Route definitions
+├── app.config.ts                  # Application configuration with providers
+└── app.routes.ts                  # Route definitions with lazy loading
 ```
-
-## Available Routes
-
-- `/` - Landing page
-- `/signup` - User registration
-- `/signin` - User login
-- `/auth/callback` - OAuth2 callback handler
-- `/dashboard` - Protected dashboard (requires authentication)
-- `/profile` - User profile management (requires authentication)
-- `/resume` - Resume builder (requires authentication)
-
-## Backend API
-
-The application requires a backend API with the following endpoints:
-
-### Authentication
-- `POST /auth/signup` - User registration
-- `POST /auth/login` - User login (returns JWT)
-- `GET /oauth2/authorization/google` - Google OAuth2 flow
-- `GET /oauth2/authorization/github` - GitHub OAuth2 flow
-
-### User Management
-- `GET /api/v1/users/{id}` - Get user profile
-- `PUT /api/v1/users/{id}` - Update user profile
-- `PATCH /api/v1/users/{id}/change-password` - Change password
-
-### Resume Management
-- `GET /api/v1/users/{userId}/resume` - Get user's resume
-- `PUT /api/v1/users/{userId}/resume` - Create/update resume
-- `POST /api/v1/users/upload-pdf` - Upload and parse resume PDF
 
 ## Configuration
 
