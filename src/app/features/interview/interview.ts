@@ -64,6 +64,10 @@ export class Interview implements OnInit, OnDestroy {
   currentQuestionIndex = signal<number>(0);
   isSubmitting = signal<boolean>(false);
   isLoadingFirstQuestion = signal<boolean>(false);
+  currentQuestionAudio = signal<string | null>(null);
+
+  // Audio playback
+  private currentAudio: HTMLAudioElement | null = null;
 
   // Questions loaded from backend
   questions: Question[] = [
@@ -79,6 +83,23 @@ export class Interview implements OnInit, OnDestroy {
   });
 
   questionNumber = computed(() => this.currentQuestionIndex() + 1);
+
+  private playQuestionAudio() {
+    const audioData = this.currentQuestionAudio();
+    if (!audioData) return;
+
+    // Stop current audio if playing
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+
+    // Create and play new audio
+    this.currentAudio = new Audio(audioData);
+    this.currentAudio.play().catch(() => {
+      // Audio playback failed silently
+    });
+  }
 
   ngOnInit() {
     // Get session ID from route
@@ -112,6 +133,11 @@ export class Interview implements OnInit, OnDestroy {
             id: 1,
             text: response.question
           };
+
+          // Store audio if available
+          if (response.audioBase64) {
+            this.currentQuestionAudio.set(response.audioBase64);
+          }
         } else {
           this.messageService.add({
             severity: 'error',
@@ -120,9 +146,8 @@ export class Interview implements OnInit, OnDestroy {
           });
         }
       },
-      error: (error) => {
+      error: () => {
         this.isLoadingFirstQuestion.set(false);
-        console.error('Error loading first question:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -140,11 +165,9 @@ export class Interview implements OnInit, OnDestroy {
   startInterview() {
     this.isStarted.set(true);
     this.startTimer();
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Interview Started',
-      detail: 'Good luck with your interview!'
-    });
+
+    // Play audio for first question if available
+    this.playQuestionAudio();
   }
 
   endInterview() {
@@ -172,8 +195,7 @@ export class Interview implements OnInit, OnDestroy {
           next: () => {
             this.completeInterview();
           },
-          error: (error) => {
-            console.error('Error ending interview:', error);
+          error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -187,15 +209,7 @@ export class Interview implements OnInit, OnDestroy {
 
   private completeInterview() {
     this.stopTimer();
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Interview Ended',
-      detail: 'Redirecting to dashboard...'
-    });
-
-    setTimeout(() => {
-      this.router.navigate(['/dashboard']);
-    }, 1500);
+    this.router.navigate(['/dashboard']);
   }
 
   async recordAnswer() {
@@ -220,26 +234,13 @@ export class Interview implements OnInit, OnDestroy {
 
         // Stop all tracks
         stream.getTracks().forEach(track => track.stop());
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Recording Stopped',
-          detail: 'Your answer has been recorded'
-        });
       };
 
       // Start recording
       this.mediaRecorder.start();
       this.isRecording.set(true);
 
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Recording',
-        detail: 'Recording your answer...'
-      });
-
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
+    } catch {
       this.messageService.add({
         severity: 'error',
         summary: 'Recording Error',
@@ -259,11 +260,6 @@ export class Interview implements OnInit, OnDestroy {
     this.hasRecording.set(false);
     this.recordedBlob.set(null);
     this.audioChunks = [];
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Ready to Re-record',
-      detail: 'Click "Record Answer" to try again'
-    });
   }
 
   submitAnswer() {
@@ -288,34 +284,15 @@ export class Interview implements OnInit, OnDestroy {
       return;
     }
 
-    // Get user info
-    const user = this.authService.getUser();
-    if (!user || !user.id) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'User not authenticated'
-      });
-      return;
-    }
-
-    const userName = `${user.firstName} ${user.lastName}`.trim() || user.email;
-
     // Convert blob to file
     const file = new File([blob], 'answer.webm', { type: 'audio/webm' });
 
     this.isSubmitting.set(true);
 
     // Submit answer to backend
-    this.interviewService.submitAnswer(sessionIdValue, file, user.id.toString(), userName).subscribe({
+    this.interviewService.submitAnswer(sessionIdValue, file).subscribe({
       next: (response) => {
         this.isSubmitting.set(false);
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Answer Submitted',
-          detail: 'Your answer has been recorded successfully'
-        });
 
         // Check if interview is complete
         if (response.sessionStatus === 'COMPLETED' || !response.nextQuestion) {
@@ -326,7 +303,7 @@ export class Interview implements OnInit, OnDestroy {
           });
           setTimeout(() => {
             this.completeInterview();
-          }, 3000);
+          }, 2000);
         } else {
           // Move to next question
           const nextIndex = this.currentQuestionIndex() + 1;
@@ -346,15 +323,23 @@ export class Interview implements OnInit, OnDestroy {
             });
           }
 
+          // Store next question audio if available
+          if (response.audioBase64) {
+            this.currentQuestionAudio.set(response.audioBase64);
+            // Play the next question audio
+            this.playQuestionAudio();
+          } else {
+            this.currentQuestionAudio.set(null);
+          }
+
           // Reset recording state for next question
           this.hasRecording.set(false);
           this.recordedBlob.set(null);
           this.audioChunks = [];
         }
       },
-      error: (error) => {
+      error: () => {
         this.isSubmitting.set(false);
-        console.error('Error submitting answer:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Submission Failed',
@@ -379,5 +364,11 @@ export class Interview implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopTimer();
+
+    // Stop any playing audio
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
   }
 }

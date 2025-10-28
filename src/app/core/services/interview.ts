@@ -75,19 +75,13 @@ export class InterviewService {
   /**
    * Submit answer (audio/video file) for the current question
    */
-  submitAnswer(sessionId: string, file: File, userId: string, userName: string): Observable<AnswerSubmissionResponseDto> {
+  submitAnswer(sessionId: string, file: File): Observable<AnswerSubmissionResponseDto> {
     const formData = new FormData();
     formData.append('file', file);
 
     return this.http.post<AnswerSubmissionResponseDto>(
       `${this.baseUrl}/${sessionId}/answer`,
-      formData,
-      {
-        params: {
-          userId,
-          userName
-        }
-      }
+      formData
     );
   }
 

@@ -26,6 +26,7 @@ export interface CreateInterviewSessionResponse {
 
 export interface QuestionDto {
   question: string;
+  audioBase64?: string;
 }
 
 export interface FeedbackDto {
@@ -41,6 +42,7 @@ export interface AnswerSubmissionResponseDto {
   sessionStatus: string;
   feedback: FeedbackDto;
   nextQuestion?: string;
+  audioBase64?: string;
 }
 
 export interface SessionListDto {
